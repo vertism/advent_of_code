@@ -12,15 +12,28 @@ RUDLLUDRRDRRLRURRULRLRDUDLRRLRDDUDRDLRRLLRURRDDLRLLRRURULRUULDUDUULDULDLRLRDLRDL
 
     lines.each do |line|
       line.chars.each do |direction|
-        move(direction)
+        move_1(direction)
       end
-      digits << number
+      digits << number_1
     end
 
     puts "Part 1: #{digits.join}"
+
+    @position[:x] = 0
+    @position[:y] = 2
+    digits = []
+
+    lines.each do |line|
+      line.chars.each do |direction|
+        move_2(direction)
+      end
+      digits << number_2
+    end
+
+    puts "Part 2: #{digits.join}"
   end
 
-  def move(direction)
+  def move_1(direction)
     case direction
     when 'L'
       @position[:x] = [@position[:x]-1,0].max
@@ -33,8 +46,73 @@ RUDLLUDRRDRRLRURRULRLRDUDLRRLRDDUDRDLRRLLRURRDDLRLLRRURULRUULDUDUULDULDLRLRDLRDL
     end
   end
 
-  def number
+  def number_1
     @position[:x] + 1 + (@position[:y] * 3)
+  end
+
+  def move_2(direction)
+    case direction
+    when 'L'
+      if [1,2,3].include?(@position[:y]) && @position[:x] > 1 ||
+        @position[:y] == 2 && @position[:x] > 0
+        @position[:x] -= 1
+      end
+    when 'R'
+      if [1,2,3].include?(@position[:y]) && @position[:x] < 3 ||
+        @position[:y] == 2 && @position[:x] < 4
+        @position[:x] += 1
+      end
+    when 'U'
+      if [1,2,3].include?(@position[:x]) && @position[:y] > 1 ||
+        @position[:x] == 2 && @position[:y] > 0
+        @position[:y] -= 1
+      end
+    when 'D'
+      if [1,2,3].include?(@position[:x]) && @position[:y] < 3 ||
+        @position[:x] == 2 && @position[:y] < 4
+        @position[:y] += 1
+      end
+    end
+  end
+
+  def number_2
+    case @position[:x]
+    when 0
+      5
+    when 1
+      case @position[:y]
+      when 1
+        2
+      when 2
+        6
+      when 3
+        'A'
+      end
+    when 2
+      case @position[:y]
+      when 0
+        1
+      when 1
+        3
+      when 2
+        7
+      when 3
+        'B'
+      when 4
+        'D'
+      end
+    when 3
+      case @position[:y]
+      when 1
+        4
+      when 2
+        8
+      when 3
+        9
+      end
+    when 4
+      9
+    end
   end
 end
 
