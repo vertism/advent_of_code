@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 class Day2
 
   def run
