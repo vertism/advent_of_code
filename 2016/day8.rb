@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
 class Day8
-  
+
   def initialize
-    @inputs = %w{
+    @inputs = <<-EOS
       rect 1x1
       rotate row y=0 by 6
       rect 1x1
@@ -166,35 +166,75 @@ class Day8
       rotate column x=8 by 1
       rotate column x=2 by 5
       rotate column x=1 by 5
-    }
+    EOS
   end
-  
+
   def run
-    screen = screen_setup
-    
-    @inputs.each do |input|
-      if input =~ /rect/
+    @screen = screen_setup
+
+    @inputs.split("\n").map(&:strip).each do |input|
+      if input =~ /^rect/
         rect(input)
-      elsif input =~ /column/
+      elsif input =~ /^rotate column/
         rotate_column(input)
-      elsif input =~ /row/
+      elsif input =~ /^rotate row/
         rotate_row(input)
       end
     end
+
+    puts "Part 1: #{@screen.flatten.inject(:+)}"
+
+    print_screen
   end
-  
+
   def rect(input)
+    x, y = input_values(input)
+    0.upto(y-1).each do |row|
+      0.upto(x-1).each do |col|
+        @screen[row][col] = 1
+      end
+    end
   end
-  
+
   def rotate_column(input)
+    col, amount = input_values(input)
+    copy = Array.new(6, 0)
+    0.upto(5).each do |i|
+      value = @screen[i][col]
+      offset = (i + amount) % 6
+      copy[offset] = value
+    end
+    copy.each_with_index do |value, i|
+      @screen[i][col] = value
+    end
   end
-  
+
   def rotate_row(input)
+    row, amount = input_values(input)
+    copy = Array.new(50, 0)
+    @screen[row].each_with_index do |value, i|
+      offset = (i + amount) % 50
+      copy[offset] = value
+    end
+    @screen[row] = copy
   end
-  
+
   def screen_setup
     (0..5).map do
       Array.new(50, 0)
+    end
+  end
+
+  def input_values(input)
+    if match = /(\d+)[^\d]+(\d+)/.match(input)
+      [match[1].to_i, match[2].to_i]
+    end
+  end
+
+  def print_screen
+    @screen.each do |col|
+      col.each { |c| print c == 1 ? '0' : ' ' }
+      puts
     end
   end
 end
