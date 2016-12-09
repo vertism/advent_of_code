@@ -580,21 +580,20 @@ class Day6
   end
 
   def run
-    result1 = []
-    result2 = []
-    0.upto(7).each do |i|
-      letters = 0.upto(@inputs.size-1).inject(Hash.new(0)) do |hash, j|
-        letter = @inputs[j][i]
-        hash[letter] += 1
+    result1 = ''
+    result2 = ''
+    7.times do |i|
+      letters = (@inputs.size-1).times.inject(Hash.new(0)) do |hash, j|
+        hash[@inputs[j][i]] += 1
         hash
       end
-      sorted = letters.to_a.sort{ |x, y| y[1] <=> x[1] }
-      result1 << sorted.first[0]
-      result2 << sorted.last[0]
+      sorted = letters.sort{ |x, y| y[1] <=> x[1] }
+      result1 << sorted[0][0]
+      result2 << sorted[-1][0]
     end
 
-    puts "Part 1: #{result1.join('')}"
-    puts "Part 2: #{result2.join('')}"
+    puts "Part 1: #{result1}"
+    puts "Part 2: #{result2}"
   end
 end
 

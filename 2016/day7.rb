@@ -2009,8 +2009,7 @@ class Day7
   
   def run
     tsl = @inputs.select do |input|
-      in_square_brackets = false
-      valid = false
+      in_square_brackets = valid = false
       input.chars.each_with_index do |char, index|
         if char == "["
           in_square_brackets = true

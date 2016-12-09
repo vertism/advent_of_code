@@ -7,40 +7,38 @@ class Day9
   end
 
   def run
-    puts "Part 1: #{get_decompressed_length(@input)}"
-    puts "Part 2: #{get_decompressed_length(@input, true)}"
+    puts "Part 1: #{get_length(@input)}"
+    puts "Part 2: #{get_length(@input, true)}"
   end
 
-  def get_decompressed_length(input, part2=false)
-    decompressed_length = 0
+  def get_length(input, part2=false)
+    length = 0
     in_marker = false
     skip = number_of_chars = repeat = 0
 
     input.chars.each_with_index do |char, index|
       if in_marker
-        if char == ')'
-          in_marker = false
-        end
+        in_marker = false if char == ?)
       elsif skip > 0
         if part2 && skip == number_of_chars
           input[index..index+number_of_chars]
-          decompressed_length += (repeat * get_decompressed_length(input[index..index+number_of_chars-1], part2))
+          length += (repeat * get_length(input[index..index+number_of_chars-1], part2))
         end
         skip -= 1
-      elsif char == '('
+      elsif char == ?(
         in_marker = true
         if match = /\((\d+)x(\d+)\)/.match(input[index..-1])
           number_of_chars = skip = match[1].to_i
           repeat = match[2].to_i
           unless part2 
-            decompressed_length += (repeat * number_of_chars)
+            length += (repeat * number_of_chars)
           end
         end
       else
-        decompressed_length += 1
+        length += 1
       end
     end
-    decompressed_length
+    length
   end
 
 end

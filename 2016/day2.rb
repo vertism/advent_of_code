@@ -9,26 +9,21 @@ LDURLLLRLLLUURLLULDLRLLDLURULRULRDUDLDDUDRLRRDLULLDDULUUULDRLDURURLURLDLRUDULLLU
 URURRUUULLLLUURDULULLDLLULRUURRDRRLUULRDDRUDRRDUURDUDRUDDRUULURULDRLDRDDDLDLRLUDDRURULRLRLLLDLRRUDLLLLRLULDLUUDUUDRDLRRULLRDRLRLUUDDRRLLDDRULLLRLLURDLRRRRRLLDDRRDLDULDULLDLULLURURRLULRLRLLLLURDDRDDDUUDRRRDUUDDLRDLDRRLLRURUDUUUDLDUULLLRLURULRULRDRLLLDLDLRDRDLLLRUURDDUDDLULRULDLRULUURLLLRRLLLLLLRUURRLULRUUUDLDUDLLRRDDRUUUURRRDRRDULRDUUDULRRRDUUUUURRDUURRRRLDUDDRURULDDURDDRDLLLRDDURUDLLRURLRRRUDDLULULDUULURLUULRDLRDUDDRUULLLRURLDLRRLUDLULDRLUDDDRURUULLDLRLLLDULUDDRLRULURLRDRRDDLDLURUDDUUURRDDLUDDRDUULRRDLDRLLLULLRULRURULRLULULRDUD
 RUDLLUDRRDRRLRURRULRLRDUDLRRLRDDUDRDLRRLLRURRDDLRLLRRURULRUULDUDUULDULDLRLRDLRDLRUURLDRLUDRRDDDRDRRRDDLLLRRLULLRRDDUDULRDRDUURLDLRULULUDLLDRUDUURRUDLLRDRLRRUUUDLDUDRRULLDURRDUDDLRURDLDRLULDDURRLULLRDDDRLURLULDLRUDLURDURRUDULDUUDLLLDDDUUURRRDLLDURRDLULRULULLRDURULLURDRLLRUUDDRRUDRDRRRURUUDLDDRLDRURULDDLLULULURDLDLDULLRLRDLLUUDDUDUDDDDRURLUDUDDDRRUDDLUDULLRDLDLURDDUURDLRLUUDRRULLRDLDDDLDULDUDRDUUULULDULUDLULRLRUULLDURLDULDRDLLDULLLULRLRD}
 
-    @position = {x: 1, y: 1}
+    @position = { x: 1, y: 1 }
     digits = []
 
     lines.each do |line|
-      line.chars.each do |direction|
-        move_1(direction)
-      end
+      line.chars.each { |direction| move_1(direction) }
       digits << number_1
     end
 
     puts "Part 1: #{digits.join}"
 
-    @position[:x] = 0
-    @position[:y] = 2
+    @position = { x: 0, y: 2 }
     digits = []
 
     lines.each do |line|
-      line.chars.each do |direction|
-        move_2(direction)
-      end
+      line.chars.each { |direction| move_2(direction) }
       digits << number_2
     end
 
@@ -79,41 +74,28 @@ RUDLLUDRRDRRLRURRULRLRDUDLRRLRDDUDRDLRRLLRURRDDLRLLRRURULRUULDUDUULDULDLRLRDLRDL
 
   def number_2
     case @position[:x]
-    when 0
-      5
+    when 0; 5
     when 1
       case @position[:y]
-      when 1
-        2
-      when 2
-        6
-      when 3
-        'A'
+      when 1; 2
+      when 2; 6
+      when 3; 'A'
       end
     when 2
       case @position[:y]
-      when 0
-        1
-      when 1
-        3
-      when 2
-        7
-      when 3
-        'B'
-      when 4
-        'D'
+      when 0; 1
+      when 1; 3
+      when 2; 7
+      when 3; 'B'
+      when 4; 'D'
       end
     when 3
       case @position[:y]
-      when 1
-        4
-      when 2
-        8
-      when 3
-        9
+      when 1; 4
+      when 2; 8
+      when 3; 9
       end
-    when 4
-      9
+    when 4; 9
     end
   end
 end

@@ -25,7 +25,7 @@ class Day1
   def move(direction, distance)
     turn(direction)
 
-    1.upto(distance).each do |i|
+    distance.times do |i|
       update_position(direction)
       if @visited.has_key?("#{@position[:x]}-#{@position[:y]}")
         @crossover ||= distance_away_from_start

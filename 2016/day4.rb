@@ -967,7 +967,7 @@ class Day4
 end
 
 class Room
-  PATTERN = /([a-z\-]*)(\d*)\[(\w*)\]/
+  PATTERN = /(?<name>[a-z\-]*)(?<sector>\d*)\[(?<checksum>\w*)\]/
   
   def initialize(data)
     @regex = PATTERN.match(data)
@@ -986,15 +986,15 @@ class Room
   end
   
   def encrypted_name
-    @encrypted_name ||= @regex[1]
+    @encrypted_name ||= @regex[:name]
   end
   
   def sector_id
-    @sector_id ||= @regex[2].to_i
+    @sector_id ||= @regex[:sector].to_i
   end
   
   def checksum
-    @checksum ||= @regex[3]
+    @checksum ||= @regex[:checksum]
   end
   
   def real?
