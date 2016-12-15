@@ -4,54 +4,53 @@ class Day11
 
   def run
     @positions = {}
-    collect('12131-0')
-    puts "Part 1: #{@positions['44444']}"
+    state = [1,1,1,2,3,2,3,2,3,2,3]
+    collect([state,0])
+    puts "Part 1: #{@positions['4' * state.size]}"
+
     @positions = {}
-    collect('11123232323-0')
-    puts "Part 2: #{@positions['44444444444']}"
+    state = [1,1,1,1,1,1,1,2,3,2,3,2,3,2,3]
+    collect([state,0])
+    puts "Part 2: #{@positions['4' * state.size]}"
   end
 
   def collect(start)
     stack = [start]
     while !stack.empty?
-      puts stack.size
-      state = stack.delete_at(0)
-      state, steps = state.split('-')
-      next if state == ('4' * state.size)
-      state = state.chars.map(&:to_i)
-      steps = steps.to_i
+      state, steps = stack.delete_at(0)
 
       groups(state).each do |objects|
         occupants = *objects
-        directions = if state[0] == 1
-          [1]
-        elsif state[0] == 4
-          [-1]
-        else
-          [1, -1]
-        end
+        directions = []
+        directions << 1 if state[0] < 4
+        directions << -1 if state[0] > 1
 
         directions.each do |i|
           new_state = state.clone
           if move(i, new_state, occupants, steps)
-            stack << "#{new_state.join('')}-#{steps+1}" unless steps >= 30
+            if new_state.all? { |i| i == 4 }
+            else
+              stack << [new_state, steps+1]
+            end
           end
         end
       end
+
     end
   end
 
   def groups(state)
     elevator = state[0]
     available = state.each_index.select{|i| state[i] == elevator }[1..-1]
-    available + available.permutation(2).map(&:sort).uniq
+    pairs = available.permutation(2).map(&:sort).uniq
+    available + pairs
   end
 
   def move(direction, state, occupants, steps)
     ([0] + occupants).each { |i| state[i] += direction }
 
-    if valid = valid?(state)
-      identifier = state.join('')
+    if valid = valid_move?(state)
+      identifier = hash(state)
       if !@positions[identifier] || @positions[identifier] > steps+1
         @positions[identifier] = steps+1
       else
@@ -62,15 +61,20 @@ class Day11
     valid
   end
 
-  def reset(direction, state, occupants)
-    ([0] + occupants).each { |i| state[i] += direction }
+  def valid_move?(state)
+    pairs = pairs(state)
+    pairs.all? do |pair|
+      pair[0] == pair[1] ||
+      !pairs.map { |p| p[0] }.include?(pair[1])
+    end
   end
 
-  def valid?(state)
-    return false if state[0] < 1 || state[0] > 4
-    return false if (state[1] != state[2]) && (state[3] == state[2])
-    return false if (state[3] != state[4]) && (state[1] == state[4])
-    true
+  def hash(state)
+    ([state[0]] + pairs(state).flatten).join
+  end
+
+  def pairs(state)
+    state[1..-1].each_slice(2).to_a.sort
   end
 
 end
