@@ -516,14 +516,14 @@ juo pmiyoh xxk myphio ogfyf dovlmwm moevao qqxidn"
 class Day4
   def run1
     INPUT.each_line.select do |passphrase|
-      words = passphrase.split(' ')
+      words = passphrase.split
       words.size == words.uniq.size
     end.count
   end
 
   def run2
     INPUT.each_line.select do |passphrase|
-      words = passphrase.split(' ')
+      words = passphrase.split
       sorted = words.map{ |word| word.chars.sort.join }
       sorted.size == sorted.uniq.size
     end.count
