@@ -18,40 +18,43 @@ class Day3
     x_offset + y_offset
   end
 
-  def location(i)
+  def previous_square_size(i)
     layer = 1
-    square = 1
-    while square < i
-      square += 8 * layer
+    max_square = 1
+    while max_square < i
+      max_square += 8 * layer
       layer += 1
     end
+
+    (layer - 2) * 8
   end
 
   def run2
-    directions = [:E, :N, :W, :S]
-    positions = [:first, :middle, :penultimate, :last]
+    directions = [:S, :E, :N, :W]
     d = 0
     direction = directions[d % directions.size]
-    @numbers = [1]
-    step = 1
-    i = 0
-    while i <= 18#@numbers.last < INPUT
+    @numbers = [1, 1, 2, 4, 5, 10, 11]
+    step = 3
+    i = @numbers.size - 1
+    while @numbers.last <= INPUT
       2.times do
         step.times do |j|
           i += 1
-          p = if j == step
-            3
+
+          position = if j == step - 1
+            :last
           elsif j == 0
-            0
-          elsif j == step - 1
-            2
+            :first
+          elsif j == step - 2
+            :penultimate
           else
-            1
+            :middle
           end
-          values = @numbers.values_at(*closest(i, directions[d], positions[p])).inject(&:+)
-          @numbers << values
-          p @numbers.last
+
+          @numbers << @numbers.values_at(*closest(i, direction, position)).inject(&:+)
+          break if @numbers.last > INPUT
         end
+        break if @numbers.last > INPUT
         d += 1
         direction = directions[d % directions.size]
       end
@@ -61,95 +64,34 @@ class Day3
   end
 
   def closest(i, face, position)
-    result = [i-1]
-
-    case face
-    when :n
-      case face
-      when :first
-        result << i-2
-        # down, down left
-      when :middle
-        # down right, down, down left
-      when :penultimate
-        # down, down right
-      when :last
-        # down right
-      end
-    when :s
-      case face
-      when :first
-        result << i-2
-        #  up, up right
-      when :middle
-        # up left, up, up right
-      when :penultimate
-        # up left, up
-      when :last
-        # up left
-      end
-    when :e
-      case face
-      when :first
-        result << i-2
-        # left, up left
-      when :middle
-        # down left, left, up left
-      when :penultimate
-        # down left, left
-      when :last
-        # down left
-      end
-    when :w
-      case face
-      when :first
-        result << i-2
-        # right, down right
-      when :middle
-        # up right, right, down right
-      when :penultimate
-        # up right, down
-      when :last
-        # up right
-      end
-    end
-  end
-
-  def closest(i)
-    result = [i-1]
-    if i < 9 && i > 1
-      result << 0
+    offset = case face
+    when :N then 2
+    when :S then 6
+    when :E then 0
+    when :W then 4
     end
 
-    if i == 3
-      result << 1
-    elsif i == 5
-      result << 3
-    elsif i == 7
-      result << [1,5]
-    elsif i == 8
-      result << 1
-    elsif i == 9
-      result << 1
-    elsif i == 10
-      result << [1,2,8]
-    elsif i == 11
-      result << [1,2]
-    elsif i == 12
-      result << 2
-    elsif i == 13
-      result << [2,3,11]
-    elsif i == 14
-      result << [2,3,4]
-    elsif i == 15
-      result << [3,4]
-    elsif i == 16
-      result << 4
-    elsif i == 17
-      result << [4,5,15]
+    last_row_square = i - previous_square_size(i) - offset
+
+    result = [i - 1]
+
+    case position
+    when :first
+      result << i - 2
+      result << last_row_square - 1
+      result << last_row_square
+    when :middle
+      result << last_row_square - 2
+      result << last_row_square - 1
+      result << last_row_square
+    when :penultimate
+      result << last_row_square - 2
+      result << last_row_square - 1
+    when :last
+      result << last_row_square - 2
     end
 
-    result.flatten
+    result
   end
 end
 
