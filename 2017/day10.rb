@@ -28,6 +28,10 @@ class Day10
 
     list[0] * list[1]
   end
+
+  def to_ascii(input)
+    input.each_byte.to_a + [17, 31, 73, 47, 23]
+  end
 end
 
 p Day10.new.run
