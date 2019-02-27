@@ -47,15 +47,14 @@ const bestLength = alphabet.reduce((acc, letter) => {
     .split("")
     .filter(l => l.toLowerCase() !== letter)
     .join("");
-  console.log(newInput);
-  const length = 1;
-  //   const length = reduce(newInput);
 
-  if (length > acc) {
+  const length = reduce(newInput);
+
+  if (length < acc) {
     return length;
   } else {
     return acc;
   }
-}, 0);
+}, 1000000);
 
 console.log(bestLength);
