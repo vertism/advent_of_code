@@ -1,14 +1,16 @@
 #!/usr/bin/env ruby
 
 class Intcode
-  attr_reader :input, :id, :output_position, :outputs
+  attr_reader :input, :output_position, :outputs, :halted
+  attr_accessor :ids
 
-  def initialize(file, id=0, output_position=0)
+  def initialize(file, ids=[0], output_position=0)
     @input = file.read.split(',').map(&:to_i)
-    @id = id
+    @ids = ids
     @output_position = output_position
     @index = 0
     @outputs = []
+    @halted = false
   end
 
   def result
@@ -16,7 +18,10 @@ class Intcode
     while instruction.type != Instruction::HALT
       instruction = Instruction.new(input[@index])
 
-      break if instruction.type == Instruction::HALT
+      if instruction.type == Instruction::HALT
+        @halted = true
+        break
+      end
 
       if [Instruction::ADD, Instruction::MULTIPLY].include?(instruction.type)
         add_or_multiply(instruction)
@@ -28,6 +33,7 @@ class Intcode
 
       if instruction.type == Instruction::OUTPUT
         output_instruction(instruction)
+        break
       end
 
       if instruction.type == Instruction::JUMPIFTRUE
@@ -94,7 +100,7 @@ class Intcode
   def input_instruction(instruction)
     @index += 1
     position = input[@index]
-    input[position] = id
+    input[position] = ids.delete_at(0)
     @index += 1
   end
 
@@ -128,7 +134,7 @@ class Intcode
         value = input[@index + i + 1]
       else
         position = input[@index + i + 1]
-        value = input[position]
+        value = input[position] unless position.nil?
       end
       value
     end
