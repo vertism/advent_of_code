@@ -16,15 +16,11 @@ final = []
 0.upto(digits_in_layer-1).map do |position|
   input.each_slice(digits_in_layer) do |layer|
     next if layer[position].to_i == 2
-    if layer[position].to_i == 0
-      final << " "
-    else
-      final << layer[position].to_i
-    end
+    final << layer[position]
     break
   end
 end
 
-final.each_slice(width) { |row| p row.join() }
+final.each_slice(width) { |row| p row.join().gsub("0", " ") }
 
 
