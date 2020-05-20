@@ -11,6 +11,7 @@ class Intcode
     @index = 0
     @outputs = []
     @halted = false
+    @relative_base = 0
   end
 
   def result
@@ -47,10 +48,12 @@ class Intcode
       if instruction.type == Instruction::LESSTHAN
         values = parameters(instruction)
 
-        if values[0] < values[1]
-          input[values[2]] = 1
-        else
-          input[values[2]] = 0
+        if values[2] >= 0
+          if values[0] < values[1]
+            input[values[2]] = 1
+          else
+            input[values[2]] = 0
+          end
         end
         @index += 4
       end
@@ -58,12 +61,20 @@ class Intcode
       if instruction.type == Instruction::EQUALS
         values = parameters(instruction)
 
-        if values[0] == values[1]
-          input[values[2]] = 1
-        else
-          input[values[2]] = 0
+        if values[2] >= 0
+          if values[0] == values[1]
+            input[values[2]] = 1
+          else
+            input[values[2]] = 0
+          end
         end
         @index += 4
+      end
+
+      if instruction.type == Instruction::ADJUSTBASE
+        values = parameters(instruction)
+        @relative_base += values[0]
+        @index += 2
       end
 
       if instruction.type == Instruction::UNKNOWN
@@ -80,10 +91,6 @@ class Intcode
 
   private
 
-  def instruction(input)
-    Instruction.new(input)
-  end
-
   def add_or_multiply(instruction)
     values = parameters(instruction)
 
@@ -93,15 +100,18 @@ class Intcode
       value = values[0] * values[1]
     end
 
-    input[values[2]] = value
+    if values[2] >= 0
+      input[values[2]] = value
+    end
     @index += 4
   end
 
   def input_instruction(instruction)
-    @index += 1
-    position = input[@index]
-    input[position] = ids.delete_at(0)
-    @index += 1
+    values = parameters(instruction)
+    if values[0] >= 0
+      input[values[0]] = ids.delete_at(0)
+    end
+    @index += 2
   end
 
   def output_instruction(instruction)
@@ -112,7 +122,7 @@ class Intcode
 
   def jump_if_true(instruction)
     values = parameters(instruction)
-    if values[0] > 0
+    if values[0] > 0 && values[1] >= 0
       @index = values[1]
     else
       @index += 3
@@ -121,7 +131,7 @@ class Intcode
 
   def jump_if_false(instruction)
     values = parameters(instruction)
-    if values[0] == 0
+    if values[0] == 0 && values[1] >= 0
       @index = values[1]
     else
       @index += 3
@@ -130,11 +140,21 @@ class Intcode
 
   def parameters(instruction)
     instruction.parameter_modes.each_with_index.map do |mode, i|
-      if mode == "1" || (i == 2 && [Instruction::ADD, Instruction::MULTIPLY, Instruction::LESSTHAN, Instruction::EQUALS].include?(instruction.type))
-        value = input[@index + i + 1]
+      # 0: Position Mode
+      # 1: Immediate Mode
+      # 2: Relative Mode
+      if mode == "1" ||
+        (i == 2 && [Instruction::ADD, Instruction::MULTIPLY, Instruction::LESSTHAN, Instruction::EQUALS].include?(instruction.type))
+          relative = mode == "2" ? @relative_base : 0
+          value = input[@index + i + 1] + relative
       else
-        position = input[@index + i + 1]
-        value = input[position] unless position.nil?
+        relative = mode == "2" ? @relative_base : 0
+        position = input[@index + i + 1] + relative
+        if instruction.type == Instruction::INPUT
+          value = position
+        else
+          value = input[position] || 0 unless position.nil?
+        end
       end
       value
     end
@@ -153,6 +173,7 @@ class Instruction
   JUMPIFFALSE = 6
   LESSTHAN = 7
   EQUALS = 8
+  ADJUSTBASE = 9
   HALT = 99
 
   def initialize(input)
@@ -181,6 +202,8 @@ class Instruction
       LESSTHAN
     when "08"
       EQUALS
+    when "09"
+      ADJUSTBASE
     when "99"
       HALT
     else
@@ -188,8 +211,19 @@ class Instruction
     end
   end
 
+  def down_to
+    case type
+    when ADD, MULTIPLY, LESSTHAN, EQUALS
+      0
+    when JUMPIFTRUE, JUMPIFFALSE
+      1
+    else
+      2
+    end
+  end
+
   def parameter_modes
-    2.downto(0).map { |i| input[i] }
+    2.downto(down_to).map { |i| input[i] }
   end
 end
 
