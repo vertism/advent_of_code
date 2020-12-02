@@ -1,23 +1,18 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+package day1;
+
 import java.util.List;
+
+import utils.Utils;
 
 public class Day1 {
   public static void main(String[] args) {
     Day1 day1;
-    List<String> lines;
     String filename = "./2020/Day1/input";
-    Path path = Paths.get(filename);
-    try {
-      lines = Files.readAllLines(path);
-      day1 = new Day1(lines);
-      // day1.runPart1();
-      day1.runPart2();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+
+    List<String> lines = Utils.fileToArray(filename);
+    day1 = new Day1(lines);
+    // day1.runPart1();
+    day1.runPart2();
   }
 
   List<String> values;
