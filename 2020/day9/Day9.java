@@ -10,7 +10,8 @@ public class Day9 {
 
     List<String> lines = Utils.fileToArray(filename);
     Day9 day9 = new Day9(lines, 25);
-    day9.runPart1();
+    int num = day9.runPart1();
+    day9.runPart2(num);
   }
 
   List<String> values;
@@ -21,7 +22,7 @@ public class Day9 {
     this.preamble = preamble;
   }
 
-  public void runPart1() {
+  public int runPart1() {
     for (int i = this.preamble; i < this.values.size(); i++) {
       Boolean found = false;
       int number = Integer.parseInt(this.values.get(i));
@@ -34,8 +35,6 @@ public class Day9 {
         for (int k = j + 1; k < i; k++) {
           int x = Integer.parseInt(this.values.get(j));
           int y = Integer.parseInt(this.values.get(k));
-          // System.out.println(x);
-          // System.out.println(y);
           if (x + y == number) {
             found = true;
             break;
@@ -45,8 +44,55 @@ public class Day9 {
 
       if (!found) {
         System.out.println(number);
-        break;
+        return number;
       }
     }
+    return -1;
+  }
+
+  public void runPart2(int num) {
+    Boolean notFound = true;
+    int start = 0;
+    int end = 0;
+
+    while (notFound && start <= this.values.size()) {
+      int count = 0;
+
+      for (int i = start; i < this.values.size(); i++) {
+        int number = Integer.parseInt(this.values.get(i));
+        count += number;
+
+        if (count == num) {
+          notFound = false;
+          end = i;
+          break;
+        }
+
+        if (count > num) {
+          break;
+        }
+      }
+
+      if (notFound) {
+        start++;
+      }
+    }
+
+    int min = Integer.MAX_VALUE;
+    int max = 0;
+
+    for (int i = start; i < end; i++) {
+      int number = Integer.parseInt(this.values.get(i));
+      if (number < min) {
+        min = number;
+      }
+
+      if (number > max) {
+        max = number;
+      }
+    }
+
+    System.out.println(min + max);
+
   }
 }
