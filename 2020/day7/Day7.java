@@ -13,7 +13,8 @@ public class Day7 {
 
     List<String> lines = Utils.fileToArray(filename);
     Day7 day7 = new Day7(lines);
-    day7.runPart1();
+    // day7.runPart1();
+    day7.runPart2();
   }
 
   List<String> values;
@@ -43,6 +44,10 @@ public class Day7 {
     System.out.println(bags.size());
   }
 
+  public void runPart2() {
+    System.out.println(this.required("shiny gold") - 1);
+  }
+
   private List<String> bagsContaining(String type) {
     List<String> bags = new ArrayList<>();
     for (String line : this.values) {
@@ -54,5 +59,27 @@ public class Day7 {
     }
 
     return bags;
+  }
+
+  private int required(String type) {
+    int total = 1;
+
+    for (String line : this.values) {
+      String[] parts = line.split("contain");
+      if (parts[0].contains(type)) {
+        String[] bags = parts[1].split(",");
+        for (String bag : bags) {
+          String digit = bag.trim().substring(0, 1);
+          try {
+            int num = Integer.parseInt(digit);
+            String description = bag.trim().substring(2, bag.length() - 4);
+            total += num * this.required(description);
+          } catch (NumberFormatException e) {
+          }
+        }
+      }
+    }
+
+    return total;
   }
 }
