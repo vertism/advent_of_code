@@ -7,3 +7,4 @@ acc -99
 acc +1
 jmp -4
 acc +6
+FINAL +0
