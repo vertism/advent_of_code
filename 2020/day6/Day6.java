@@ -1,5 +1,6 @@
 package day6;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +13,8 @@ public class Day6 {
 
     List<String> lines = Utils.fileToArray(filename);
     Day6 day6 = new Day6(lines);
-    day6.runPart1();
+    // day6.runPart1();
+    day6.runPart2();
   }
 
   List<String> values;
@@ -27,7 +29,6 @@ public class Day6 {
 
     for (String line : this.values) {
       if (line.length() == 0) {
-        System.out.println(yeses.size());
         answers += yeses.size();
         yeses = new HashSet<>();
         continue;
@@ -39,7 +40,44 @@ public class Day6 {
       }
     }
 
-    System.out.println(yeses.size());
+    answers += yeses.size();
+
+    System.out.println(answers);
+  }
+
+  public void runPart2() {
+    int answers = 0;
+    List<String> current = new ArrayList<>();
+    List<String> yeses = new ArrayList<>();
+    Boolean processing = false;
+
+    for (String line : this.values) {
+      if (line.length() == 0) {
+        processing = false;
+        System.out.println(current.size());
+        answers += current.size();
+        continue;
+      }
+
+      String[] letters = line.trim().split("");
+
+      if (processing) {
+        yeses = new ArrayList<>();
+        for (String letter : letters) {
+          if (current.contains(letter)) {
+            yeses.add(letter);
+          }
+        }
+        current = yeses;
+      } else {
+        current = new ArrayList<>();
+        for (String letter : letters) {
+          current.add(letter);
+        }
+        processing = true;
+      }
+    }
+
     answers += yeses.size();
 
     System.out.println(answers);
