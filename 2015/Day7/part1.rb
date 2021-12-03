@@ -49,26 +49,30 @@ def ins_not(target, parts, gates)
 end
 
 def ins_rshift(target, parts, gates)
-  a = parts[0]
+  a = gates[parts[0]]
   shift = parts[2].to_i
-  return false unless !!gates.key?(a)
 
-  gates[target] = gates[a] >> shift
+  return false if a.nil?
+
+  gates[target] = a >> shift
 end
 
 def ins_lshift(target, parts, gates)
-  a = parts[0]
+  a = gates[parts[0]]
   shift = parts[2].to_i
-  return false unless !!gates.key?(a)
 
-  gates[target] = gates[a] << shift
+  return false if a.nil?
+
+  gates[target] = a << shift
 end
+
+count = 0
 
 loop do
   input.each do |ins|
     instruction, target = ins.split(' -> ')
 
-    next if gates.key?(target)
+    # next if gates.key?(target)
 
     parts = instruction.split
     if instruction.include?("AND")
@@ -83,14 +87,17 @@ loop do
       complete = false unless ins_or(target, parts, gates)
     elsif /\d/ =~ parts[0]
       gates[target] = parts[0].to_i
-    elsif !!gates.key?(parts[0])
+    elsif gates[parts[0]]
       gates[target] = gates[parts[0]]
     else
       complete = false
     end
   end
 
-  break if complete
+  break if complete || count > 20
+
+  count += 1
+
   complete = true
 end
 
