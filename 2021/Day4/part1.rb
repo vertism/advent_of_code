@@ -10,38 +10,27 @@ class Board
   def mark(number)
     @board.each do |row|
       row.each_with_index do |value, i|
-        if value == number
-          row[i] = "*"
-          break
-        end
+        row[i] = "*" if value == number
       end
     end
   end
 
   def is_winner?
     complete_row = @board.any? do |row|
-      row.all?{ |n| n == "*"}
+      row.all? { |n| n == "*"}
     end
 
     complete_col = 0.upto(4).any? do |col|
-      @board[col][0] == "*" && @board[col][1] == "*" && @board[col][2] == "*" && @board[col][3] == "*" && @board[col][4] == "*"
+      (0..4).to_a.all? { |i| @board[col][i] == "*" }
     end
 
     complete_row || complete_col
   end
 
   def unmarked_sum
-    total = 0
-
-    @board.each do |row|
-      row.each do |num|
-        if num != "*"
-          total += num.to_i
-        end
-      end
+    @board.sum do |row|
+      row.select { |num| num != "*" }.map(&:to_i).sum
     end
-
-    total
   end
 end
 
