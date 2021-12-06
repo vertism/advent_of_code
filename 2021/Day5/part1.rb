@@ -2,7 +2,7 @@
 
 input = File.open('input').readlines.map(&:strip)
 
-map = Array.new(1000) { Array.new(1000, 0) }
+diagram = Array.new(1000) { Array.new(1000, 0) }
 
 input.each do |segment|
   coord1, coord2 = segment.split(' -> ')
@@ -12,26 +12,18 @@ input.each do |segment|
   if x1 == x2
     min, max = [y1, y2].sort
     min.upto(max).each do |point|
-      map[point][x1] += 1
+      diagram[point][x1] += 1
     end
-  end
-
-  if y1 == y2
+  elsif y1 == y2
     min, max = [x1, x2].sort
     min.upto(max).each do |point|
-      map[y1][point] += 1
+      diagram[y1][point] += 1
     end
   end
 end
 
-total = 0
-
-map.each do |row|
-  row.each do |point|
-    if point > 1
-      total += 1
-    end
-  end
+total = diagram.sum do |row|
+  row.select { |point| point > 1 }.count
 end
 
 p total
