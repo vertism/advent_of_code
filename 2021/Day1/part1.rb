@@ -1,10 +1,7 @@
-#!/usr/bin/env ruby
+input = File.open("input").readlines.map(&:to_i)
 
-input = File.open("input").readlines.map{|i| i.strip.to_i}
-
-total_increases = 0
-input[1..].each_with_index do |measure, i|
-  total_increases += 1 if measure > input[i]
-end
+total_increases = 1.upto(input.size - 1).select do |i|
+  input[i] > input[i - 1]
+end.count
 
 p total_increases
