@@ -28,15 +28,9 @@ end.to_h
   end
 end
 
-letters = {}
-
-template.each do |pair, count|
-  pair.chars.each do |letter|
-    if letters[letter]
-      letters[letter] += count
-    else
-      letters[letter] = count
-    end
+letters = template.each_with_object(Hash.new(0)) do |kv, counts|
+  kv.first.chars.each do |letter|
+    counts[letter] += kv.last
   end
 end
 
