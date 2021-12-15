@@ -58,7 +58,7 @@ class Day15
 
   def distance_to_end(point)
     goal = [@cave.size - 1, @cave[0].size - 1]
-    (goal.first - point.first) + (goal.last - point.last)
+    ((goal.first - point.first) + (goal.last - point.last)) / 2
   end
 
   def risk_of_point(point)
