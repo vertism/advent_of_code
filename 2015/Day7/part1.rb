@@ -1,104 +1,52 @@
-#!/usr/bin/env ruby
+class Day7
 
-input = File.open('input').readlines.map(&:strip)
+  def initialize
+    input = File.open('input').readlines.map(&:strip)
 
-gates = {}
-complete = true
+    @ins = {}
 
-def ins_and(target, parts, gates)
-  if parts[0][/\d+/]
-    a = parts[0].to_i
-  else
-    a = gates[parts[0]]
+    input.each do |line|
+      instruction, identifier = line.split(' -> ')
+      @ins[identifier] = instruction
+    end
+
+    @found = {}
+    @count = 0
   end
 
-  if parts[0][/\d+/]
-    b = parts[0].to_i
-  else
-    b = gates[parts[2]]
-  end
+  def calculate(id)
+    if /\d/ =~ id
+      return id.to_i
+    end
 
-  return false if a.nil? || b.nil?
+    @count += 1
 
-  gates[target] = a & b
-end
+    if @found[id]
+      return @found[id]
+    end
 
-def ins_or(target, parts, gates)
-  if parts[0][/\d+/]
-    a = parts[0].to_i
-  else
-    a = gates[parts[0]]
-  end
-
-  if parts[0][/\d+/]
-    b = parts[0].to_i
-  else
-    b = gates[parts[2]]
-  end
-
-  return false if a.nil? || b.nil?
-
-  gates[target] = a | b
-end
-
-def ins_not(target, parts, gates)
-  a = parts[1]
-  return false unless !!gates.key?(a)
-
-  gates[target] = ("%016b" % gates[a]).chars.map{ |i| i == "0" ? "1" : "0" }.join.to_i(2)
-end
-
-def ins_rshift(target, parts, gates)
-  a = gates[parts[0]]
-  shift = parts[2].to_i
-
-  return false if a.nil?
-
-  gates[target] = a >> shift
-end
-
-def ins_lshift(target, parts, gates)
-  a = gates[parts[0]]
-  shift = parts[2].to_i
-
-  return false if a.nil?
-
-  gates[target] = a << shift
-end
-
-count = 0
-
-loop do
-  input.each do |ins|
-    instruction, target = ins.split(' -> ')
-
-    # next if gates.key?(target)
+    instruction = @ins[id]
 
     parts = instruction.split
-    if instruction.include?("AND")
-      complete = false unless ins_and(target, parts, gates)
-    elsif instruction.include?("NOT")
-      complete = false unless ins_not(target, parts, gates)
-    elsif instruction.include?("RSHIFT")
-      complete = false unless ins_rshift(target, parts, gates)
-    elsif instruction.include?("LSHIFT")
-      complete = false unless ins_lshift(target, parts, gates)
-    elsif instruction.include?("OR")
-      complete = false unless ins_or(target, parts, gates)
-    elsif /\d/ =~ parts[0]
-      gates[target] = parts[0].to_i
-    elsif gates[parts[0]]
-      gates[target] = gates[parts[0]]
+
+    result = if parts.include?("AND")
+      @found[id] = calculate(parts[0]) & calculate(parts[2])
+    elsif parts.include?("NOT")
+      @found[id] = ("%016b" % calculate(parts[1])).chars.map { |i| i == "0" ? "1" : "0" }.join.to_i(2)
+    elsif parts.include?("RSHIFT")
+      @found[id] = calculate(parts[0]) >> parts[2].to_i
+    elsif parts.include?("LSHIFT")
+      @found[id] = calculate(parts[0]) << parts[2].to_i
+    elsif parts.include?("OR")
+      @found[id] = calculate(parts[0]) | calculate(parts[2])
+    elsif /\d/ =~ instruction
+      @found[id] = instruction.to_i
     else
-      complete = false
+      calculate(instruction)
     end
+
+    result
   end
-
-  break if complete || count > 20
-
-  count += 1
-
-  complete = true
 end
 
-p gates.sort
+Day7.new.calculate("a")
