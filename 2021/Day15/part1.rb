@@ -24,8 +24,8 @@ class Day15
         if new_risk < current_risk && new_risk < overall_best
           @from[child] = new_risk
           if is_end?(child)
-            p overall_best
             overall_best = new_risk
+            p overall_best
           else
             @open.unshift(child)
           end

@@ -1,3 +1,5 @@
+require 'benchmark'
+
 class Day15
   attr_accessor :cave
 
@@ -8,45 +10,55 @@ class Day15
     y_offset = input.size
     x_offset = input[0].chars.size
 
-
     0.upto(4).each do |i|
-      input.each_with_index do |_, y|
+      0.upto(input.size - 1) do |y|
         @cave[y + (i * y_offset)] = []
       end
 
       0.upto(4).each do |j|
         input.each_with_index do |row, y|
           row.chars.each_with_index do |val, x|
-            @cave[y + (i * y_offset)][x + (j * x_offset)] = ((val.to_i + i + j - 1) % 9) + 1
+            risk = ((val.to_i + i + j - 1) % 9) + 1
+            @cave[y + (i * y_offset)][x + (j * x_offset)] = risk
           end
         end
       end
     end
 
-    @open = [[0, 0]]
-    @from = { [0, 0] => 0 }
-    overall_best = 10_000
+    to_visit = [[0, 0]]
+    risks = { [0, 0] => 0 }
+    overall_best = Float::INFINITY
 
-    while @open.size.positive?
-      current = @open.pop
+    while to_visit.size.positive?
+      current = to_visit.pop
 
       children(current).each do |child|
-        new_risk = @from[current] + risk_of_point(child)
-        current_risk = @from[child] || overall_best
+        new_risk = risks[current] + risk_of_point(child)
+        current_risk = risks[child] || overall_best
 
         next unless new_risk < current_risk && new_risk < overall_best
 
-        @from[child] = new_risk
+        risks[child] = new_risk
         if end?(child)
           overall_best = new_risk
+          p overall_best
         else
-          @open.unshift(child)
+          if to_visit.empty? || (distance_to_end(child) + new_risk) < (distance_to_end(to_visit.last) + risks[to_visit.last])
+            to_visit.push(child)
+          else
+            to_visit.unshift(child)
+          end
         end
       end
     end
 
     goal = [@cave.size - 1, @cave[0].size - 1]
-    p @from[goal]
+    p risks[goal]
+  end
+
+  def distance_to_end(point)
+    goal = [@cave.size - 1, @cave[0].size - 1]
+    (goal.first - point.first) + (goal.last - point.last)
   end
 
   def risk_of_point(point)
@@ -69,4 +81,7 @@ class Day15
   end
 end
 
-Day15.new.run
+time = Benchmark.measure { Day15.new.run }
+p time.real
+
+
