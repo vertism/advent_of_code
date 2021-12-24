@@ -5,17 +5,46 @@ class Day23
     @best_score = 1_000_000
 
     positions = {
-      "A0" => ["D", 0, false],
-      "A1" => ["A", 0, false],
-      "B0" => ["A", 0, false],
-      "B1" => ["C", 0, false],
-      "C0" => ["D", 0, false],
-      "C1" => ["B", 0, false],
-      "D0" => ["B", 0, false],
-      "D1" => ["C", 0, false]
+      "A0" => ["A", 0],
+      "A3" => ["B", 0],
+      "B0" => ["D", 0],
+      "B3" => ["C", 0],
+      "C0" => ["C", 0],
+      "C3" => ["B", 0],
+      "D0" => ["A", 0],
+      "D3" => ["D", 0],
+      "A1" => ["D", 0],
+      "A2" => ["D", 0],
+      "B1" => ["B", 0],
+      "B2" => ["C", 0],
+      "C1" => ["A", 0],
+      "C2" => ["B", 0],
+      "D1" => ["A", 0],
+      "D2" => ["C", 0],
     }
 
-    @room_size = 2
+    # positions = {
+    #   "A0" => ["D", 0],
+    #   "A3" => ["A", 0],
+    #   "B0" => ["A", 0],
+    #   "B3" => ["C", 0],
+    #   "C0" => ["D", 0],
+    #   "C3" => ["B", 0],
+    #   "D0" => ["B", 0],
+    #   "D3" => ["C", 0],
+    #   "A1" => ["D", 0],
+    #   "A2" => ["D", 0],
+    #   "B1" => ["B", 0],
+    #   "B2" => ["C", 0],
+    #   "C1" => ["A", 0],
+    #   "C2" => ["B", 0],
+    #   "D1" => ["A", 0],
+    #   "D2" => ["C", 0],
+    # }
+
+    p positions
+
+    @room_size = 4
     @seen = {}
     @queue = [[positions, min_complete_score(positions)]]
 
@@ -76,6 +105,11 @@ class Day23
           end
         end
       end
+    end
+
+    if home_count > 3
+      p positions
+      p home_count
     end
 
     if home_count == positions.size
@@ -194,6 +228,8 @@ Day23.new.run
 #############
 #...........#
 ###A#C#B#C###
+  #D#C#B#A#
+  #D#B#A#C#
   #D#A#D#B#
   #########
 
