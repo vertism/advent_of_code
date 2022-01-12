@@ -1,20 +1,15 @@
 class Day8
   def run
-    input = File.open('test').readlines.map(&:strip)
-    p input
+    file = 'input'
 
-    code = input.sum { |line| line.size }
-    p code
+    input = File.readlines(file, chomp: true)
+    code = input.sum do |line|
+      line.size
+    end
 
     memory = input.sum do |line|
-      # line.tr!("\\", "a")
-      # line.gsub!(/\\\"/, "a")
-      # line.gsub!(/\\x.?.?/, "a")
-      p line
-      line.size - 2
+      eval(line).length
     end
-    p memory
-
     p code - memory
   end
 end
